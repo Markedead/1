@@ -1,0 +1,234 @@
+#include <SPI.h>
+
+// ========== Определение пинов ==========
+#define CS_PIN 10        // Chip Select (активный LOW)
+#define CLK_PIN 13       // Clock (SPI)
+#define MOSI_PIN 11      // Data In (SPI)
+#define LE_PIN 9         // Latch Enable (синхронизация)
+
+// ========== Константы ADF4350 ==========
+#define REF_FREQ 20000000UL  // Опорная частота 20 МГц
+#define R_DIVIDER 1          // Делитель опорного сигнала
+#define PRESCALER 8          // 8/9 prescaler для фазового детектора
+#define MOD_VALUE 4095       // Модулятор (FracN модулятор)
+#define CHARGE_PUMP_CURRENT 2500  // ток насоса 2.5 мА
+
+// ========== Структура регистров ADF4350 ==========
+typedef struct {
+  uint32_t reg0;  // R0: N divider
+  uint32_t reg1;  // R1: Fractional divider
+  uint32_t reg2;  // R2: PFD and Charge Pump
+  uint32_t reg3;  // R3: Control bits
+  uint32_t reg4;  // R4: Output settings
+  uint32_t reg5;  // R5: Control bits
+} ADF4350_Regs;
+
+ADF4350_Regs adf_regs;
+unsigned long current_freq = 100000000UL;  // Текущая частота (100 МГц)
+const unsigned long freq_step = 1000000UL; // Шаг 1 МГц
+
+// ========== SETUP ==========
+void setup() {
+  Serial.begin(115200);
+  delay(100);
+  
+  Serial.println("\n=== ADF4350 Frequency Synthesizer ===");
+  Serial.println("Reference: 20 MHz");
+  Serial.println("Range: 100-500 MHz");
+  Serial.println("Step: 1 MHz");
+  Serial.println("Output Power: 0 dBm");
+  Serial.println("====================================\n");
+  
+  // Инициализация пинов
+  pinMode(CS_PIN, OUTPUT);
+  pinMode(LE_PIN, OUTPUT);
+  digitalWrite(CS_PIN, HIGH);
+  digitalWrite(LE_PIN, LOW);
+  
+  // Инициализация SPI
+  SPI.begin();
+  SPI.setClockDivider(SPI_CLOCK_DIV8);  // ~2 МГц SPI clock
+  SPI.setDataMode(SPI_MODE0);
+  SPI.setBitOrder(MSBFIRST);
+  
+  delay(50);
+  
+  // Инициализация ADF4350
+  initADF4350();
+  
+  // Установка начальной частоты 100 МГц
+  setFrequency(100000000UL);
+  
+  printFrequency(current_freq);
+  printCommands();
+}
+
+// ========== MAIN LOOP ==========
+void loop() {
+  if (Serial.available()) {
+    String command = Serial.readStringUntil('\n');
+    command.trim();
+    command.toUpperCase();
+    
+    if (command == "+") {
+      incrementFrequency();
+    }
+    else if (command == "-") {
+      decrementFrequency();
+    }
+    else if (command.startsWith("F")) {
+      setFrequencyFromCommand(command);
+    }
+    else if (command == "?" || command == "H") {
+      printCommands();
+    }
+    else if (command != "") {
+      Serial.println("Unknown command. Type 'H' for help.");
+    }
+  }
+}
+
+// ========== ФУНКЦИЯ ИНИЦИАЛИЗАЦИИ ==========
+void initADF4350() {
+  // Регистр 5 (Control bits)
+  adf_regs.reg5 = 0x00180005;
+  
+  // Регистр 4 (Output power control)
+  // Bit 24-26: Output power (011 = 0 dBm), RF Output Enable
+  adf_regs.reg4 = 0x00BC803C;  // 0 dBm, output enabled
+  
+  // Регистр 3 (Control)
+  adf_regs.reg3 = 0x00000003;
+  
+  // Регистр 2 (PFD and Charge Pump)
+  // Charge pump current = 2.5 mA (bits 9-12: 0101)
+  adf_regs.reg2 = 0x00E4202E;
+  
+  // Регистр 1 (Fractional divider)
+  adf_regs.reg1 = 0x00000001;
+  
+  // Регистр 0 будет вычисляться для каждой частоты
+}
+
+// ========== РАСЧЕТ РЕГИСТРОВ ДЛЯ ЧАСТОТЫ ==========
+void calculateRegisters(unsigned long freq) {
+  // Формула: f_out = f_ref * (N + FRAC/MOD) / R
+  // где N - целая часть, FRAC - дробная часть
+  
+  // Расчет целой и дробной частей делителя
+  unsigned long N = freq / REF_FREQ;
+  unsigned long remainder = freq % REF_FREQ;
+  unsigned long FRAC = (remainder * MOD_VALUE) / REF_FREQ;
+  
+  // Регистр 0 (N divider)
+  // Bits 8-31: N divider value
+  adf_regs.reg0 = (N << 8) | 0x00;
+  
+  // Регистр 1 (Fractional divider)
+  // Bits 3-14: FRAC value, Bits 15-26: MOD value
+  adf_regs.reg1 = (FRAC << 3) | (MOD_VALUE << 15) | 0x01;
+}
+
+// ========== УСТАНОВКА ЧАСТОТЫ ==========
+void setFrequency(unsigned long freq) {
+  // Проверка диапазона
+  if (freq < 100000000UL || freq > 500000000UL) {
+    Serial.println("ERROR: Frequency out of range (100-500 MHz)");
+    return;
+  }
+  
+  current_freq = freq;
+  calculateRegisters(freq);
+  
+  // Запись регистров в обратном порядке (5->0)
+  writeRegister(adf_regs.reg5);
+  delayMicroseconds(100);
+  writeRegister(adf_regs.reg4);
+  delayMicroseconds(100);
+  writeRegister(adf_regs.reg3);
+  delayMicroseconds(100);
+  writeRegister(adf_regs.reg2);
+  delayMicroseconds(100);
+  writeRegister(adf_regs.reg1);
+  delayMicroseconds(100);
+  writeRegister(adf_regs.reg0);  // R0 - записывается последним!
+  
+  delay(100);  // Время синтезации PLL
+}
+
+// ========== ЗАПИСЬ РЕГИСТРА ЧЕРЕЗ SPI ==========
+void writeRegister(uint32_t data) {
+  digitalWrite(CS_PIN, LOW);
+  delayMicroseconds(2);
+  
+  // Отправка 32 бит, MSB first
+  SPI.transfer((data >> 24) & 0xFF);
+  SPI.transfer((data >> 16) & 0xFF);
+  SPI.transfer((data >> 8) & 0xFF);
+  SPI.transfer(data & 0xFF);
+  
+  delayMicroseconds(2);
+  digitalWrite(CS_PIN, HIGH);
+  
+  // Pulse на LE для синхронизации
+  delayMicroseconds(2);
+  digitalWrite(LE_PIN, HIGH);
+  delayMicroseconds(2);
+  digitalWrite(LE_PIN, LOW);
+}
+
+// ========== УВЕЛИЧЕНИЕ ЧАСТОТЫ ==========
+void incrementFrequency() {
+  if (current_freq < 500000000UL) {
+    setFrequency(current_freq + freq_step);
+    printFrequency(current_freq);
+  } else {
+    Serial.println("ERROR: Maximum frequency (500 MHz) reached");
+  }
+}
+
+// ========== УМЕНЬШЕНИЕ ЧАСТОТЫ ==========
+void decrementFrequency() {
+  if (current_freq > 100000000UL) {
+    setFrequency(current_freq - freq_step);
+    printFrequency(current_freq);
+  } else {
+    Serial.println("ERROR: Minimum frequency (100 MHz) reached");
+  }
+}
+
+// ========== УСТАНОВКА ЧАСТОТЫ ИЗ КОМАНДЫ ==========
+void setFrequencyFromCommand(String command) {
+  String freqStr = command.substring(1);
+  freqStr.trim();
+  
+  if (freqStr.length() == 0) {
+    Serial.println("Usage: F<frequency_MHz>");
+    Serial.println("Example: F250 (sets 250 MHz)");
+    return;
+  }
+  
+  unsigned long freq = freqStr.toInt() * 1000000UL;
+  setFrequency(freq);
+  
+  if (current_freq == freq) {
+    printFrequency(current_freq);
+  }
+}
+
+// ========== ВЫВОД ТЕКУЩЕЙ ЧАСТОТЫ ==========
+void printFrequency(unsigned long freq) {
+  Serial.print("Frequency: ");
+  Serial.print(freq / 1000000.0, 1);
+  Serial.println(" MHz");
+}
+
+// ========== СПРАВКА ПО КОМАНДАМ ==========
+void printCommands() {
+  Serial.println("\n=== Commands ===");
+  Serial.println("  +      : Increase frequency by 1 MHz");
+  Serial.println("  -      : Decrease frequency by 1 MHz");
+  Serial.println("  F<xxx> : Set frequency (example: F250 for 250 MHz)");
+  Serial.println("  H or ? : Show this help");
+  Serial.println("================\n");
+}

@@ -177,7 +177,7 @@ void writeRegister(uint32_t data) {
   digitalWrite(LE_PIN, LOW);
 }
 
-// ========== УВЕЛИЧЕНИЕ ЧАСТОТЫ ==========
+// ========== УВЕЛИЧЕНИЕ ЧАСТОТЫ =========
 void incrementFrequency() {
   if (current_freq < 500000000UL) {
     setFrequency(current_freq + freq_step);
@@ -187,7 +187,7 @@ void incrementFrequency() {
   }
 }
 
-// ========== УМЕНЬШЕНИЕ ЧАСТОТЫ ==========
+// ========== УМЕНЬШЕНИЕ ЧАСТОТЫ =========
 void decrementFrequency() {
   if (current_freq > 100000000UL) {
     setFrequency(current_freq - freq_step);

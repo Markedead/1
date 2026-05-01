@@ -216,7 +216,7 @@ void setFrequencyFromCommand(String command) {
   }
 }
 
-// ========== ВЫВОД ТЕКУЩЕЙ ЧАСТОТЫ ==========
+// ========== ВЫВОД ТЕКУЩЕЙ ЧАСТОТЫ ========
 void printFrequency(unsigned long freq) {
   Serial.print("Frequency: ");
   Serial.print(freq / 1000000.0, 1);

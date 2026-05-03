@@ -4,7 +4,7 @@
 #define CS_PIN 10        // Chip Select (активный LOW)
 #define CLK_PIN 13       // Clock (SPI)
 #define MOSI_PIN 11      // Data In (SPI)
-#define LE_PIN 9         // Latch Enable (синхронизация)
+#define LE_PIN 9         // Latch Enable 
 
 // ========== Константы ADF4350 ==========
 #define REF_FREQ 20000000UL  // Опорная частота 20 МГц

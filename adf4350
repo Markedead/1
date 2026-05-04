@@ -11,7 +11,7 @@
 #define R_DIVIDER 1          // Делитель опорного сигнала
 #define PRESCALER 8          // 8/9 prescaler для фазового детектора
 #define MOD_VALUE 4095       // Модулятор (FracN модулятор)
-#define CHARGE_PUMP_CURRENT 2500  // ток насоса 2.5 мА
+#define CHARGE_PUMP_CURRENT 2500  //
 
 // ========== Структура регистров ADF4350 ==========
 typedef struct {

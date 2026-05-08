@@ -1,6 +1,6 @@
 #include <SPI.h>
 
-// ========== Определение пинов =
+// ========== Определени
 #define CS_PIN 10        // Chip Select (активный LOW)
 #define CLK_PIN 13       // Clock (SPI)
 #define MOSI_PIN 11      // Data In (SPI)

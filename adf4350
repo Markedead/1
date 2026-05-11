@@ -7,7 +7,7 @@
 #define LE_PIN 9         // Latch Enable 
 
 // ========== Константы ADF4350 ==========
-#define REF_FREQ 20000000UL  // Опорная частота 20 МГц
+#define REF_FREQ 20000000UL  // Опорная 
 #define R_DIVIDER 1          // Делитель опорного сигнала
 #define PRESCALER 8          // 8/9 prescaler для фазового детектора
 #define MOD_VALUE 4095       // Модулятор (FracN модулятор)

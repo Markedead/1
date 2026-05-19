@@ -4,7 +4,7 @@
 #define CS_PIN 10        // Chip Select 
 #define CLK_PIN 13       // Clock (SPI)
 #define MOSI_PIN 11      // Data In (SPI)
-#define LE_PIN 9         // Latch Enable 
+#define LE_PIN 9         // Latch 9
 
 // ========== Константы 
 #define REF_FREQ 20000000UL  // О

@@ -3,7 +3,7 @@
 
 #define CS_PIN 10        // Chip Select 
 #define CLK_PIN 13       // Clock (SPI)
-#define MOSI_PIN 11      // Data In 
+#define MOSI_PIN 11      // 
 #define LE_PIN 9         // 
 
 // ========== Константы 

@@ -15,7 +15,7 @@
 
 // ========== Структура регистров ADF4350 ==========
 typedef struct {
-  uint32_t reg0;  // R0: N divider
+  uint32_t reg0;  // R0:
   uint32_t reg1;  // R1: Fractional divider
   uint32_t reg2;  // R2: PFD and Charge Pump
   uint32_t reg3;  // R3: Control bits

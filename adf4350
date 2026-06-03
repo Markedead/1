@@ -13,7 +13,7 @@
 #define MOD_VALUE 4095       // 
 #define CHARGE_PUMP_CURRENT 2500  //
 
-// ========== Структура регистров ADF4350 ==========
+
 typedef struct {
   uint32_t reg0;  // R0:
   uint32_t reg1;  // R1: Fractional divider

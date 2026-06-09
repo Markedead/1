@@ -24,7 +24,7 @@ typedef struct {
 } ADF4350_Regs;
 
 ADF4350_Regs adf_regs;
-unsigned long current_freq = 100000000UL;  // Текущая частота (100 МГц)
+unsigned long current_freq = 100000000UL;  //
 const unsigned long freq_step = 1100000UL; // Шаг 1.1 МГц
 
 // ========== SETUP ==========

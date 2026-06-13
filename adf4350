@@ -56,7 +56,6 @@ void setup() {
   // Инициализация ADF4350
   initADF4350();
   
-  // Установка начальной частоты 100 МГц
   setFrequency(100000000UL);
   
   printFrequency(current_freq);

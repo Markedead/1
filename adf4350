@@ -39,7 +39,7 @@ void setup() {
   Serial.println("Output Power: 0 dBm");
   Serial.println("====================================\n");
   
-  // Инициализация пинов
+  // 
   pinMode(CS_PIN, OUTPUT);
   pinMode(LE_PIN, OUTPUT);
   digitalWrite(CS_PIN, HIGH);

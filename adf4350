@@ -1,7 +1,7 @@
 #include <SPI.h>
 
 
-#define CS_PIN 10        // Chip Select 
+#define CS_PIN 10        // 
 #define CLK_PIN 13       // 
 #define MOSI_PIN 11      // 
 #define LE_PIN 9         // 

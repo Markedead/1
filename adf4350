@@ -62,7 +62,7 @@ void setup() {
   printCommands();
 }
 
-// ========== MAIN LOOP ==========
+// 
 void loop() {
   if (Serial.available()) {
     String command = Serial.readStringUntil('\n');

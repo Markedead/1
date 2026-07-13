@@ -7,7 +7,7 @@
 #define LE_PIN 9         // 
 
 // ========== Константы 
-#define REF_FREQ 20000000UL  
+#define REF_FREQ 24000000UL  
 #define R_DIVIDER 1          // 
 #define PRESCALER 8          // 
 #define MOD_VALUE 4095       // 

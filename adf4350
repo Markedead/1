@@ -11,7 +11,7 @@
 #define R_DIVIDER 1          // 
 #define PRESCALER 8          // 
 #define MOD_VALUE 4095       // 
-#define CHARGE_PUMP_CURRENT 2500  //
+#define CHARGE_PUMP_CURRENT 2500 
 
 
 typedef struct {
@@ -24,8 +24,8 @@ typedef struct {
 } ADF4350_Regs;
 
 ADF4350_Regs adf_regs;
-unsigned long current_freq = 700000000UL;  //
-const unsigned long freq_step = 1000000UL; //
+unsigned long current_freq = 700000000UL;  
+const unsigned long freq_step = 1000000UL; 
 
 // ========== SETUP ==========
 void setup() {

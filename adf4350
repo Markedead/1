@@ -8,9 +8,9 @@
 
 // ========== Константы 
 #define REF_FREQ 24000000UL  
-#define R_DIVIDER 1          // 
+#define R_DIVIDER 1          
 #define PRESCALER 8          // 
-#define MOD_VALUE 4095       // 
+#define MOD_VALUE 4095       
 #define CHARGE_PUMP_CURRENT 2500 
 
 

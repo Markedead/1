@@ -19,8 +19,8 @@ typedef struct {
   uint32_t reg1;  // 
   uint32_t reg2;  // 
   uint32_t reg3;  // 
-  uint32_t reg4;  //  
-  uint32_t reg5;  // 
+  uint32_t reg4; 
+  uint32_t reg5;  
 } ADF4350_Regs;
 
 ADF4350_Regs adf_regs;

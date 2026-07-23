@@ -15,8 +15,8 @@
 
 
 typedef struct {
-  uint32_t reg0;  // 
-  uint32_t reg1;  // 
+  uint32_t reg0;  
+  uint32_t reg1;  
   uint32_t reg2;  // 
   uint32_t reg3;  // 
   uint32_t reg4; 

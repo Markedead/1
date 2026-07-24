@@ -27,7 +27,7 @@ ADF4350_Regs adf_regs;
 unsigned long current_freq = 700000000UL;  
 const unsigned long freq_step = 1000000UL; 
 
-// ========== SETUP ==========
+
 void setup() {
   Serial.begin(115200);
   delay(100);
@@ -176,7 +176,7 @@ void writeRegister(uint32_t data) {
   digitalWrite(LE_PIN, LOW);
 }
 
-// ========== УВЕЛИЧЕНИЕ ЧАСТОТЫ =========
+
 void incrementFrequency() {
   if (current_freq < 500000000UL) {
     setFrequency(current_freq + freq_step);

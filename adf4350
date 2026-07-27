@@ -114,7 +114,7 @@ void calculateRegisters(unsigned long freq) {
   // Формула: f_out = f_ref * (N + FRAC/MOD) / R
   // где N - целая часть, FRAC - дробная часть
   
-  // Расчет целой и дробной частей делителя
+  
   unsigned long N = freq / REF_FREQ;
   unsigned long remainder = freq % REF_FREQ;
   unsigned long FRAC = (remainder * MOD_VALUE) / REF_FREQ;
@@ -128,7 +128,7 @@ void calculateRegisters(unsigned long freq) {
   adf_regs.reg1 = (FRAC << 3) | (MOD_VALUE << 15) | 0x01;
 }
 
-// ========== УСТАНОВКА ЧАСТОТЫ ==========
+
 void setFrequency(unsigned long freq) {
   // Проверка диапазона
   if (freq < 100000000UL || freq > 500000000UL) {

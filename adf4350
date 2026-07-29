@@ -155,7 +155,7 @@ void setFrequency(unsigned long freq) {
   delay(100);  // Время синтезации PLL
 }
 
-// ========== ЗАПИСЬ РЕГИСТРА ЧЕРЕЗ SPI ==========
+
 void writeRegister(uint32_t data) {
   digitalWrite(CS_PIN, LOW);
   delayMicroseconds(2);
@@ -169,7 +169,6 @@ void writeRegister(uint32_t data) {
   delayMicroseconds(2);
   digitalWrite(CS_PIN, HIGH);
   
-  // Pulse на LE для синхронизации
   delayMicroseconds(2);
   digitalWrite(LE_PIN, HIGH);
   delayMicroseconds(2);
